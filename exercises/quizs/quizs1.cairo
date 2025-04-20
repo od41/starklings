@@ -4,9 +4,14 @@
 // Write a function that calculates the price of an order of apples given
 // the quantity bought. No hints this time!
 
-// I AM NOT DONE
-
-fn calculate_price_of_apples{
+const DISCOUNT_THRESHOLD: u8 = 40;
+fn calculate_price_of_apples(quantity: u8) -> u256 {
+    let mut price: u8 = 3;
+    if (quantity > DISCOUNT_THRESHOLD) {
+        price = 2;
+    }
+    let you_pay = (price * quantity).try_into().unwrap();
+    you_pay
 
 }
 

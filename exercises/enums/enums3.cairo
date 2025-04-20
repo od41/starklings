@@ -4,6 +4,10 @@
 
 #[derive(Drop, Copy)]
 enum Message { // TODO: implement the message variant types based on their usage below
+    Quit,
+    Echo: felt252,
+    Move: Point,
+    ChangeColor: (u8, u8, u8)
 }
 
 #[derive(Drop, Copy)]
@@ -48,6 +52,11 @@ impl StateImpl of StateTrait {
     fn process(
         ref self: State, message: Message
     ) { // TODO: create a match expression to process the different message variants
+        match self {
+            Message::Quit => { quit() },
+            Message::Echo(value) => { println!("echoing {}", value) },
+            Message::Move((x, y)) => { println!("moving from {} to {}", x, y) },
+        }
     }
 }
 
