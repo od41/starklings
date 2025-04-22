@@ -5,7 +5,6 @@
 // Using the methods set and get from the Felt252DictTrait, implement the required functions to interact with the team
 // Make me compile and pass the test!
 
-// I AM NOT DONE
 
 #[derive(Destruct)]
 struct Team {
@@ -17,22 +16,29 @@ struct Team {
 impl TeamImpl of TeamTrait {
     fn new() -> Team {
         //TODO : initialize empty team with 0 player
+        let mut player_level: Felt252Dict<u32> = Default::default();
+        let new_team = Team {level: player_level, players_count: 0};
+        new_team
     }
 
     fn get_level(ref self: Team, name: felt252) -> usize {
-        //TODO 
+        let level = self.level.get(name);
+        level
     }
 
     fn add_player(ref self: Team, name: felt252, level: usize) -> () {
-        //TODO
+        self.level.insert(name, level);
+        self.players_count += 1;
     }
 
     fn level_up(ref self: Team, name: felt252) {
-        //TODO
+        let current_level = self.get_level(name);
+        let new_level = current_level + 1;
+        self.level.insert(name, new_level);
     }
 
     fn players_count(self: @Team) -> usize {
-        //TODO
+        *self.players_count
     }
 }
 

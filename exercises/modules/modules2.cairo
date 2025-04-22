@@ -1,9 +1,11 @@
-// I AM NOT DONE
+
 // These modules have some issues, can you fix them?
 
 const YEAR: u16 = 2050;
 
 mod order {
+    use super::YEAR;
+
     #[derive(Copy, Drop)]
     struct Order {
         name: felt252,
@@ -19,6 +21,7 @@ mod order {
 }
 
 mod order_utils {
+    use super::order::{new_order, Order};
     fn dummy_phoned_order(name: felt252) -> Order {
         new_order(name, true, 'item_a')
     }
