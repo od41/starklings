@@ -2,7 +2,6 @@
 // This is a bit challenging for Joe and Jill, Liz prepared an outline
 // for how contract should work, can you help Jill and Joe write it?
 
-// I AM NOT DONE
 
 use starknet::ContractAddress;
 
@@ -24,6 +23,7 @@ mod LizInventory {
     struct Storage {
         contract_owner: ContractAddress,
         // TODO: add storage inventory, that maps product (felt252) to stock quantity (u32)
+        inventory: Map<felt252, u32>
     }
 
     #[constructor]
@@ -34,24 +34,40 @@ mod LizInventory {
 
     #[abi(embed_v0)]
     impl LizInventoryImpl of super::ILizInventory<ContractState> {
-        fn add_stock(ref self: ContractState, ) {
+        fn add_stock(ref self: ContractState, product: felt252, new_stock: u32) {
             // TODO:
+            // * only owner can call this
+            let caller = get_caller_address();
+            let owner = self.contract_owner.read();
+            assert(caller == owner, 'Not owner');
+
             // * takes product and new_stock
             // * adds new_stock to stock in inventory
-            // * only owner can call this
+            let mut inventory_ptr = self.inventory.entry(product);
+            let current_stock = self.get_stock(product);
+            let updated_stock = current_stock + new_stock;
+
+            inventory_ptr.write(updated_stock.try_into().unwrap());
+
         }
 
-        fn purchase(ref self: ContractState, ) {
+        fn purchase(ref self: ContractState, product: felt252, quantity: u32) {
             // TODO:
             // * takes product and quantity
             // * subtracts quantity from stock in inventory
             // * anybody can call this
+            let current_stock = self.get_stock(product);
+            assert(current_stock > quantity, 'not enough stock available');
+            let updated_stock = current_stock - quantity;
+            self.inventory.entry(product).write(updated_stock);
         }
 
-        fn get_stock(self: @ContractState, ) -> u32 {
+        fn get_stock(self: @ContractState, product: felt252) -> u32 {
             // TODO:
             // * takes product
+            let current_stock = self.inventory.entry(product).read();
             // * returns product stock in inventory
+            current_stock
         }
 
         fn get_owner(self: @ContractState) -> ContractAddress {

@@ -4,7 +4,7 @@
 // only the owner to update the contract, they agree.
 // Can you help them write this contract?
 
-// I AM NOT DONE
+
 
 use starknet::ContractAddress;
 
@@ -25,7 +25,7 @@ mod ProgressTracker {
     struct Storage {
         contract_owner: ContractAddress,
         // TODO: Set types for Map
-        progress: Map<>
+        progress: Map<ContractAddress, u64>,
     }
 
     #[constructor]
@@ -38,11 +38,25 @@ mod ProgressTracker {
     impl ProgressTrackerImpl of super::IProgressTracker<ContractState> {
         fn set_progress(
             ref self: ContractState, user: ContractAddress, new_progress: u16
-        ) { // TODO: assert owner is calling
-        // TODO: set new_progress for user,
+        ) { 
+            // TODO: assert owner is calling
+            let caller = get_caller_address();
+            let owner = self.contract_owner.read();
+            assert(caller == owner, 'Not owner');
+
+            let current = self.get_progress(user.clone());
+            print!("current: {}\n", current.clone());
+            let updated = current + new_progress;
+            print!("updated: {}", updated);
+
+            // // TODO: set new_progress for user,
+            self.progress.entry(user).write(updated.try_into().unwrap());
         }
 
         fn get_progress(self: @ContractState, user: ContractAddress) -> u16 { // Get user progress
+            // self.user_warehouse.entry(address).entry(item_id).read()
+            let current: u16 = self.progress.entry(user).read().try_into().unwrap();
+            current
         }
 
         fn get_contract_owner(self: @ContractState) -> ContractAddress {
